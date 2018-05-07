@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="thu.declan.xi.server.mapper.RateMapper">
+
+    <resultMap type="Rate" id="rateResult">
+        <result property="id" column="r_id" />
+		<result property="resumeId" column="r_resumeId" />
+        <result property="companyId" column="r_companyId" />
+        <result property="stuId" column="r_stuId" />
+        <result property="direction" column="r_direction" />
+        <result property="score1" column="r_score1" />
+        <result property="score2" column="r_score2" />
+		<result property="score3" column="r_score3" />
+		<result property="score4" column="r_score4" />
+		<result property="score5" column="r_score5" />
+		<result property="comment" column="r_comment" />
+        <result property="createTime" column="r_createTime" />
+    </resultMap>
+	
+	<resultMap type="AvgRate" id="avgRateResult">
+		<result property="score1" column="avg(r_score1)" />
+        <result property="score2" column="avg(r_score2)" />
+		<result property="score3" column="avg(r_score3)" />
+		<result property="score4" column="avg(r_score4)" />
+		<result property="score5" column="avg(r_score5)" />
+	</resultMap>
+	
+    <sql id="insertBaseColumns" >
+        r_resumeId, r_companyId, r_stuId, r_direction, r_score1, r_score2, r_score3, r_score4, r_score5, r_comment
+    </sql>
+    
+    <sql id="selectBaseColumns" >
+        r_id, r_resumeId, r_companyId, r_stuId, r_direction, r_score1, r_score2, r_score3, r_score4, r_score5, r_comment, r_createTime
+    </sql>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="Rate">
+        insert into xi_rate (<include refid="insertBaseColumns" />) 
+        values (#{resumeId}, #{companyId}, #{stuId}, #{direction}, #{score1}, #{score2}, #{score3}, #{score4}, #{score5}, #{comment})
+    </insert>
+    
+    <update id="update" parameterType="Rate">
+        update xi_rate 
+        <trim prefix="set" suffixOverrides=",">
+            <if test="comment != null"> r_comment = #{comment}, </if>
+        </trim>
+        where r_id = #{id}
+    </update>
+
+    <select id="selectOne" parameterType="int" resultMap="rateResult">
+        select <include refid="selectBaseColumns" />
+        from xi_rate
+        where r_id = #{id}
+    </select>
+	
+	<sql id="whereList" >
+        <trim prefix="where" suffixOverrides="and">
+			<if test="resumeId != null"> r_resumeId = #{resumeId} and </if>
+			<if test="companyId != null"> r_companyId = #{companyId} and </if>
+			<if test="stuId != null"> r_stuId = #{stuId} and </if>
+			<if test="direction != null"> r_direction = #{direction} and </if>
+        </trim>
+    </sql>
+    
+    <select id="selectList" parameterType="Rate" resultMap="rateResult">
+        select <include refid="selectBaseColumns" />
+        from xi_rate
+        <include refid="whereList" />
+		order by r_createTime desc
+    </select>
+    
+    <select id="selectCount" parameterType="Rate" resultType="int">
+        select count(*)
+        from xi_rate
+        <include refid="whereList" />
+    </select>
+	
+	<select id="selectAvgRate" parameterType="Rate" resultMap="avgRateResult">
+		select avg(r_score1), avg(r_score2), avg(r_score3), avg(r_score4), avg(r_score5)
+		from xi_rate
+		<include refid="whereList" />
+	</select>
+   	
+	<select id="selectResumeRate" resultMap="avgRateResult">
+		select <include refid="selectBaseColumns" />
+        from xi_rate
+        where r_resumeId = #{resume.id} and r_direction = #{direction}
+		order by r_createTime desc
+		limit 1
+	</select>
+</mapper>

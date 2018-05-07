@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="thu.declan.xi.server.mapper.CompanyMapper">
+
+	<resultMap type="Company" id="companyResult">
+		<result property="id" column="c_id" />
+		<result property="accountId" column="c_accountId" />
+		<result property="name" column="c_name" />
+		<result property="addr" column="c_addr" />
+		<result property="type" column="c_type" />
+		<result property="scale" column="c_scale" />
+		<result property="contact" column="c_contact" />
+		<result property="contactPos" column="c_contactPos" />
+		<result property="contactPhone" column="c_contactPhone" />
+		<result property="email" column="c_email" />
+		<result property="avatar" column="c_avatar" />
+		<result property="phone" column="c_phone" />
+		<result property="industry" column="c_industry" />
+		<result property="code" column="c_code" />
+		<result property="intro" column="c_intro" />
+		<result property="video" column="c_video" />
+		<result property="link" column="c_link" />
+        <result property="logo" column="c_logo" />
+        <result property="cert" column="c_cert" />
+        <result property="verified" column="c_verified" />
+        <result property="createTime" column="c_createTime" />
+		<result property="frozen" column="c_frozen" />
+		<result property="priority" column="c_priority" />
+		<association property="avgRate" javaType="AvgRate">
+			<result property="score1" column="c_score1" />
+			<result property="score2" column="c_score2" />
+			<result property="score3" column="c_score3" />
+			<result property="score4" column="c_score4" />
+			<result property="score5" column="c_score5" />
+		</association>
+	</resultMap>
+	
+	<sql id="insertBaseColumns" >
+		c_accountId, c_name, c_addr, c_type, c_scale, c_contact, c_contactPos, c_contactPhone, c_avatar, c_email, c_phone, c_industry, c_code, c_intro, c_video, c_link, c_logo, c_cert
+	</sql>
+    
+	<sql id="selectBaseColumns" >
+		xi_company.*
+		<!--c_id, c_accountId, c_name, c_addr, c_type, c_scale, c_contact, c_contactPhone, c_email, c_phone, c_industry, c_code, c_intro, c_link, c_logo, c_verified, c_createTime-->
+	</sql>
+    
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="Company">
+		insert into xi_company (<include refid="insertBaseColumns" />) 
+		values (#{accountId}, #{name}, #{addr}, #{type}, #{scale}, #{contact}, #{contactPos}, #{contactPhone},  #{avatar}, #{email}, #{phone}, #{industry}, #{code}, #{intro}, #{video}, #{link}, #{logo}, #{cert})
+	</insert>
+    
+	<update id="update" parameterType="Company">
+		update xi_company 
+		<trim prefix="set" suffixOverrides=",">
+			<if test="name != null"> c_name = #{name}, </if>
+			<if test="addr != null"> c_addr = #{addr}, </if>
+			<if test="type != null"> c_type = #{type}, </if>
+			<if test="scale != null"> c_scale = #{scale}, </if>
+			<if test="contact != null"> c_contact = #{contact}, </if>
+            <if test="contactPos != null"> c_contactPos = #{contactPos}, </if>
+			<if test="contactPhone != null"> c_contactPhone = #{contactPhone}, </if>
+			<if test="email != null"> c_email = #{email}, </if>
+			<if test="phone != null"> c_phone = #{phone}, </if>
+			<if test="industry != null"> c_industry = #{industry}, </if>
+			<if test="code != null"> c_code = #{code}, </if>
+			<if test="intro != null"> c_intro = #{intro}, </if>
+			<if test="video != null"> c_video = #{video}, </if>
+			<if test="link != null"> c_link = #{link}, </if>
+            <if test="logo != null"> c_logo = #{logo}, </if>
+            <if test="cert != null"> c_cert = #{cert}, </if>
+            <if test="avatar != null"> c_avatar = #{avatar}, </if>
+            <if test="verified != null"> c_verified = #{verified}, </if>
+			<if test="frozen != null"> c_frozen = #{frozen}, </if>
+			<if test="priority != null"> c_priority = #{priority}, </if>
+			<if test="avgRate != null"> 
+				<if test="avgRate.score1 != null"> c_score1 = #{avgRate.score1}, </if>
+				<if test="avgRate.score2 != null"> c_score2 = #{avgRate.score2}, </if>
+				<if test="avgRate.score3 != null"> c_score3 = #{avgRate.score3}, </if>
+				<if test="avgRate.score4 != null"> c_score4 = #{avgRate.score4}, </if>
+				<if test="avgRate.score5 != null"> c_score5 = #{avgRate.score5}, </if>
+			</if>
+		</trim>
+		where c_id = #{id}
+	</update>
+
+	<select id="selectOne" parameterType="int" resultMap="companyResult">
+		select <include refid="selectBaseColumns" />
+		from xi_company
+		where c_id = #{id}
+	</select>
+    	
+	<select id="selectByAccountId" parameterType="int" resultMap="companyResult">
+		select <include refid="selectBaseColumns" />
+		from xi_company
+		where c_accountId = #{accountId}
+	</select>
+    
+	<select id="selectList" parameterType="Company" resultMap="companyResult">
+		select <include refid="selectBaseColumns" />
+		from xi_company
+		<trim prefix="where" suffixOverrides="and">
+			<if test="accountId != null"> c_accountId = #{accountId} and </if>
+			<if test="type != null"> c_type = #{type} and </if>
+			<if test="industry != null"> c_industry = #{industry} and </if>
+			<if test="scale != null"> c_scale = #{scale} and </if>
+			<if test="frozen != null"> c_frozen = #{frozen} and </if>
+			<if test="queryParams.searchKey != null">
+				(c_name LIKE concat('%', #{queryParams.searchKey}, '%')) and
+			</if>
+		</trim>
+		order by c_priority DESC
+	</select>
+    
+	<select id="selectCount" parameterType="Company" resultType="int">
+		select count(*)
+		from xi_company
+		<trim prefix="where" suffixOverrides="and">
+			<if test="accountId != null"> c_accountId = #{accountId} and </if>
+			<if test="type != null"> c_type = #{type} and </if>
+			<if test="industry != null"> c_industry = #{industry} and </if>
+			<if test="scale != null"> c_scale = #{scale} and </if>
+			<if test="frozen != null"> c_frozen = #{frozen} and </if>
+			<if test="queryParams.searchKey != null">
+				(c_name LIKE concat('%', #{queryParams.searchKey}, '%')) and
+			</if>
+		</trim>
+	</select>
+	
+	<delete id="delete" parameterType="int">
+		delete from xi_company where c_id = #{id}
+	</delete>
+   	
+</mapper>

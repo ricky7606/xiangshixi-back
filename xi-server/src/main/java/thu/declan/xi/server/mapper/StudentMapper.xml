@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="thu.declan.xi.server.mapper.StudentMapper">
+
+    <resultMap type="Student" id="studentResult">
+        <result property="id" column="s_id" />
+        <result property="accountId" column="s_accountId" />
+        <result property="name" column="s_name" />
+		<result property="idNo" column="s_idNo" />
+        <result property="phone" column="s_phone" />
+        <result property="gender" column="s_gender" />
+        <result property="education" column="s_education" />
+        <result property="major" column="s_major" />
+        <result property="area" column="s_area" />
+        <result property="email" column="s_email" />
+        <result property="school" column="s_school" />
+        <result property="language" column="s_language" />
+        <result property="langLevel" column="s_langLevel" />
+        <result property="grade" column="s_grade" />
+        <result property="stuCard" column="s_stuCard" />
+        <result property="certs" column="s_certs" />
+		<result property="selfEval" column="s_selfEval" />
+		<result property="socialExp" column="s_socialExp" />
+		<result property="workExp" column="s_workExp" />
+        <result property="avatar" column="s_avatar" />
+		<result property="subscription" column="s_subscription" />
+        <result property="createTime" column="s_createTime" />
+        <result property="frozen" column="s_frozen" />
+    </resultMap>
+	
+    <sql id="insertBaseColumns" >
+        s_accountId, s_name, s_idNo, s_phone, s_gender, s_education, s_major, s_area, s_email, s_school, s_language, s_langLevel, s_grade, s_stuCard, s_certs, s_selfEval, s_socialExp, s_workExp, s_avatar, s_subscription
+    </sql>
+    
+    <sql id="selectBaseColumns" >
+        s_id, s_accountId, s_name, s_idNo, s_phone, s_gender, s_education, s_major, s_area, s_email, s_school, s_language, s_langLevel, s_grade, s_stuCard, s_certs, s_selfEval, s_socialExp, s_workExp, s_avatar, s_subscription, s_frozen, s_createTime
+    </sql>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="Student">
+        insert into xi_student (<include refid="insertBaseColumns" />) 
+        values (#{accountId}, #{name}, #{idNo}, #{phone}, #{gender}, #{education}, #{major}, #{area}, #{email}, #{school}, #{language}, #{langLevel}, #{grade}, #{stuCard}, #{certs}, #{selfEval}, #{socialExp}, #{workExp}, #{avatar}, #{subscription})
+    </insert>
+    
+    <update id="update" parameterType="Student">
+        update xi_student 
+        <trim prefix="set" suffixOverrides=",">
+            <if test="accountId != null"> s_accountId = #{accountId}, </if>
+            <if test="name != null"> s_name = #{name}, </if>
+			<if test="idNo != null"> s_idNo = #{idNo}, </if>
+            <if test="phone != null"> s_phone = #{phone}, </if>
+            <if test="gender != null"> s_gender = #{gender}, </if>
+            <if test="education != null"> s_education = #{education}, </if>
+            <if test="major != null"> s_major = #{major}, </if>
+            <if test="area != null"> s_area = #{area}, </if>
+            <if test="email != null"> s_email = #{email}, </if>
+            <if test="school != null"> s_school = #{school}, </if>
+            <if test="language != null"> s_language = #{language}, </if>
+            <if test="langLevel != null"> s_langLevel = #{langLevel}, </if>
+            <if test="grade != null"> s_grade = #{grade}, </if>
+            <if test="stuCard != null"> s_stuCard = #{stuCard}, </if>
+            <if test="certs != null"> s_certs = #{certs}, </if>
+			<if test="selfEval != null"> s_selfEval = #{selfEval}, </if>
+			<if test="socialExp != null"> s_socialExp = #{socialExp}, </if>
+			<if test="workExp != null"> s_workExp = #{workExp}, </if>
+            <if test="avatar != null"> s_avatar = #{avatar}, </if>
+			<if test="subscription != null"> s_subscription = #{subscription}, </if>
+            <if test="frozen != null"> s_frozen = #{frozen}, </if>
+        </trim>
+        where s_id = #{id}
+    </update>
+
+    <select id="selectOne" parameterType="int" resultMap="studentResult">
+        select <include refid="selectBaseColumns" />
+        from xi_student
+        where s_id = #{id}
+    </select>
+    	
+    <select id="selectByAccountId" parameterType="int" resultMap="studentResult">
+        select <include refid="selectBaseColumns" />
+        from xi_student
+        where s_accountId = #{accountId}
+    </select>
+	
+	<sql id="whereList" >
+        <trim prefix="where" suffixOverrides="and">
+			<if test="name != null"> s_name = #{name} and </if>
+			<if test="school != null"> s_school LIKE concat('%', #{school}, '%') and </if>
+			<if test="phone != null"> s_phone = #{phone} and </if>
+            <if test="frozen != null"> s_frozen = #{frozen} and </if>
+        </trim>
+    </sql>
+    
+    <select id="selectList" parameterType="Student" resultMap="studentResult">
+        select <include refid="selectBaseColumns" />
+        from xi_student
+        <include refid="whereList" />
+    </select>
+    
+    <select id="selectCount" parameterType="Student" resultType="int">
+        select count(*)
+        from xi_student
+		<include refid="whereList" />
+    </select>
+	
+    <delete id="delete" parameterType="int">
+        delete from xi_student where s_id = #{id}
+    </delete>
+   	
+</mapper>

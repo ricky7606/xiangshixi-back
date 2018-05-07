@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="thu.declan.xi.server.mapper.AccountMapper">
+
+    <resultMap type="Account" id="accountResult">
+        <result property="id" column="a_id" />
+		<result property="role" column="a_role" />
+        <result property="phone" column="a_phone" />
+        <result property="unionId" column="a_unionId" />
+		<result property="openId" column="a_openId" />
+		<result property="password" column="a_password" />
+        <result property="point" column="a_point" />
+        <result property="balance" column="a_balance" />
+    </resultMap>
+	
+    <sql id="insertBaseColumns" >
+        a_role, a_phone, a_unionId, a_openId, a_password
+    </sql>
+    
+    <sql id="selectBaseColumns" >
+		a_id, a_role, a_phone, a_unionId, a_openId, a_password, a_point, a_balance
+    </sql>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="Account">
+        insert into xi_account (<include refid="insertBaseColumns" />) 
+        values (#{role}, #{phone}, #{unionId}, #{openId}, #{password})
+    </insert>
+    
+    <update id="update" parameterType="Account">
+        update xi_account 
+        <trim prefix="set" suffixOverrides=",">
+            <if test="password != null"> a_password = #{password}, </if>
+            <if test="unionId != null"> a_unionId = #{unionId}, </if>
+			<if test="openId != null"> a_openId = #{openId}, </if>
+			<if test="phone != null"> a_phone = #{phone}, </if>
+        </trim>
+        where a_id = #{id}
+    </update>
+
+    <update id="addPoint">
+        update xi_account
+        set a_point = a_point + #{point}
+        where a_id = #{id}
+    </update>
+    
+    <update id="addBalance">
+        update xi_account
+        set a_balance = a_balance + #{balance}
+        where a_id = #{id}
+    </update>
+    
+    <select id="selectOne" parameterType="int" resultMap="accountResult">
+        select <include refid="selectBaseColumns" />
+        from xi_account
+        where a_id = #{id}
+    </select>
+    	
+    <select id="selectByIdentity" parameterType="Account" resultMap="accountResult">
+        select <include refid="selectBaseColumns" />
+        from xi_account
+		<trim prefix="where" suffixOverrides="and">
+            <if test="phone != null"> a_phone = #{phone} and </if>
+			<if test="unionId != null"> a_unionId = #{unionId} and </if>
+			<if test="openId != null"> a_openId = #{openId} and </if>
+            <if test="role != null"> a_role = #{role} and </if>
+        </trim>
+		limit 1
+    </select>
+    
+    <select id="selectList" parameterType="Account" resultMap="accountResult">
+        select <include refid="selectBaseColumns" />
+        from xi_account
+        <trim prefix="where" suffixOverrides="and">
+            <if test="phone != null"> a_phone = #{phone} and </if>
+			<if test="unionId != null"> a_unionId = #{unionId} and </if>
+			<if test="openId != null"> a_openId = #{openId} and </if>
+            <if test="role != null"> a_role = #{role} and </if>
+			<if test="queryRoles != null"> 
+				a_role in 
+				<foreach item="item" index="index" collection="queryRoles" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+				and 
+			</if>
+        </trim>
+    </select>
+    
+    <select id="selectCount" parameterType="Account" resultType="int">
+        select count(*)
+        from xi_account
+        <trim prefix="where" suffixOverrides="and">
+            <if test="phone != null"> a_phone = #{phone} and </if>
+			<if test="unionId != null"> a_unionId = #{unionId} and </if>
+			<if test="openId != null"> a_openId = #{openId} and </if>
+            <if test="role != null"> a_role = #{role} and </if>
+			<if test="queryRoles != null"> 
+				a_role in 
+				<foreach item="item" index="index" collection="queryRoles" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+				and 
+			</if>
+        </trim>
+    </select>
+	
+    <delete id="delete" parameterType="int">
+        delete from xi_account where a_id = #{id}
+    </delete>
+   	
+</mapper>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="thu.declan.xi.server.mapper.NewsMapper">
+
+    <resultMap type="News" id="newsResult">
+        <result property="id" column="n_id" />
+        <result property="title" column="n_title" />
+		<result property="author" column="n_author" />
+        <result property="content" column="n_content" />
+        <result property="view" column="n_view" />
+        <result property="star" column="n_star" />
+		<result property="published" column="n_published" />
+        <result property="createTime" column="n_createTime" />
+    </resultMap>
+	
+    <sql id="insertBaseColumns" >
+        n_title, n_content, n_author, n_view, n_star, n_published
+    </sql>
+    
+    <sql id="selectBaseColumns" >
+		n_id, n_title, n_content, n_author, n_view, n_star, n_published, n_createTime
+    </sql>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="News">
+        insert into xi_news (<include refid="insertBaseColumns" />) 
+        values (#{title}, #{content}, #{author}, #{view}, #{star}, #{published})
+    </insert>
+    
+    <update id="update" parameterType="News">
+        update xi_news 
+        <trim prefix="set" suffixOverrides=",">
+            <if test="title != null"> n_title = #{title}, </if>
+            <if test="content != null"> n_content = #{content}, </if>
+			<if test="author != null"> n_author = #{author}, </if>
+            <if test="view != null"> n_view = #{view}, </if>
+            <if test="star != null"> n_star = #{star}, </if>
+            <if test="published != null"> n_published = #{published}, </if>
+        </trim>
+        where n_id = #{id}
+    </update>
+
+    <select id="selectOne" parameterType="int" resultMap="newsResult">
+        select <include refid="selectBaseColumns" />
+        from xi_news
+        where n_id = #{id}
+    </select>
+    	
+    <select id="selectList" parameterType="News" resultMap="newsResult">
+        select <include refid="selectBaseColumns" />
+        from xi_news
+        <trim prefix="where" suffixOverrides="and">
+            <if test="title != null">  n_title concat('%', #{title}, '%') and </if>      
+			<if test="published != null">  n_published = #{published} and </if>
+        </trim>
+		order by n_priority desc, n_createTime desc
+    </select>
+    
+    <select id="selectCount" parameterType="News" resultType="int">
+        select count(*)
+        from xi_news
+        <trim prefix="where" suffixOverrides="and">
+			<if test="title != null">  n_title concat('%', #{title}, '%') and </if>
+			<if test="published != null">  n_published = #{published} and </if>
+        </trim>
+    </select>
+	
+    <delete id="delete" parameterType="int">
+        delete from xi_news where n_id = #{id}
+    </delete>
+   	
+<!--	star relative-->
+	<update id="incViewCnt" parameterType="int">
+        update xi_news set n_view = n_view + 1 where n_id = #{id}
+    </update>
+		
+	<update id="incStarCnt">
+        update xi_news set n_star = n_star + 1 where n_id = #{id};
+    </update>
+	
+	<update id="decStarCnt" parameterType="int">
+        update xi_news set n_star = n_star - 1 where n_id = #{id}
+    </update>
+	
+	<insert id="insertStar">
+		insert xi_newsstar (s_accountid, s_newsid) values (#{accountId}, #{id});
+	</insert>
+		
+	<delete id="deleteStar">
+		delete from xi_newsstar where s_accountid = #{accountId} and s_newsid = #{id};
+	</delete>
+	
+	<select id="selectStar" resultType="int">
+		select count(*) from xi_newsstar where s_accountid = #{accountId} and s_newsid = #{id};
+	</select>
+	
+</mapper>
+

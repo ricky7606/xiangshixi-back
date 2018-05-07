@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="thu.declan.xi.server.mapper.WithdrawMapper">
+
+    <resultMap type="Withdraw" id="withdrawResult">
+        <result property="id" column="w_id" />
+        <result property="accountId" column="w_accountId" />
+		<result property="value" column="w_value" />
+        <result property="channel" column="w_channel" />
+        <result property="state" column="w_state" />
+        <result property="confirmed" column="w_confirmed" />
+        <result property="createTime" column="w_createTime" />
+        <result property="payTime" column="w_payTime" />
+    </resultMap>
+	
+    <sql id="insertBaseColumns" >
+        w_accountId, w_value, w_channel, w_state
+    </sql>
+    
+    <sql id="selectBaseColumns" >
+        xi_withdraw.*
+    </sql>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="Withdraw">
+        insert into xi_withdraw (<include refid="insertBaseColumns" />) 
+        values (#{accountId}, #{value}, #{channel}, #{state})
+    </insert>
+    
+    <update id="update" parameterType="Withdraw">
+        update xi_withdraw 
+        <trim prefix="set" suffixOverrides=",">
+            <if test="accountId != null"> w_accountId = #{accountId}, </if>
+			<if test="value != null"> w_value = #{value}, </if>
+            <if test="channel != null"> w_channel = #{channel}, </if>
+            <if test="state != null"> w_state = #{state}, </if>
+            <if test="confirmed != null"> w_confirmed = #{confirmed}, </if>
+            <if test="payTime != null"> w_payTime = #{payTime}, </if>
+        </trim>
+        where w_id = #{id}
+    </update>
+
+    <select id="selectOne" parameterType="int" resultMap="withdrawResult">
+        select <include refid="selectBaseColumns" />
+        from xi_withdraw
+        where w_id = #{id}
+    </select>
+    	
+	<sql id="whereList" >
+        <trim prefix="where" suffixOverrides="and">
+            <if test="accountId != null"> w_accountId = #{accountId} and </if>
+            <if test="state != null"> w_state = #{state} and </if>
+			<if test="channel != null"> w_channel = #{channel} and </if>
+        </trim>
+    </sql>
+    
+    <select id="selectList" parameterType="Withdraw" resultMap="withdrawResult">
+        select <include refid="selectBaseColumns" />
+        from xi_withdraw
+        <include refid="whereList" />
+    </select>
+    
+    <select id="selectCount" parameterType="Withdraw" resultType="int">
+        select count(*)
+        from xi_withdraw
+		<include refid="whereList" />
+    </select>
+	
+    <delete id="delete" parameterType="int">
+        delete from xi_withdraw where w_id = #{id}
+    </delete>
+   	
+</mapper>

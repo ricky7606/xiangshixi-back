@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="thu.declan.xi.server.mapper.PositionMapper">
+
+    <resultMap type="Position" id="positionResult">
+        <result property="id" column="p_id" />
+        <result property="companyId" column="p_companyId" />
+        <result property="title" column="p_title" />
+        <result property="ptype" column="p_ptype" />
+        <result property="area" column="p_area" />
+        <result property="addr" column="p_addr" />
+        <result property="startDate" column="p_startDate" />
+        <result property="endDate" column="p_endDate" />
+        <result property="startTime" column="p_startTime" />
+        <result property="endTime" column="p_endTime" />
+        <result property="salary" column="p_salary" />
+        <result property="stuSalary" column="p_stuSalary" />
+        <result property="unit" column="p_unit" />
+        <result property="minDays" column="p_minDays" />
+        <result property="continuous" column="p_continuous" />
+        <result property="count" column="p_count" />
+        <result property="retention" column="p_retention" />
+        <result property="intro" column="p_intro" />
+        <result property="reqGender" column="p_reqGender" />
+        <result property="reqEdu" column="p_reqEdu" />
+        <result property="reqGrade" column="p_reqGrade" />
+        <result property="reqMajor" column="p_reqMajor" />
+        <result property="reqLang" column="p_reqLang" />
+        <result property="reqLangLevel" column="p_reqLangLevel" />
+        <result property="active" column="p_active" />
+        <result property="createTime" column="p_createTime" />
+        <association property="company" javaType="Company">
+            <id property="id" column="p_companyId"/>
+            <result property="accountId" column="c_accountId" />
+            <result property="name" column="c_name" />
+            <result property="addr" column="c_addr" />
+            <result property="type" column="c_type" />
+            <result property="contact" column="c_contact" />
+            <result property="contactPos" column="c_contactPos" />
+            <result property="contactPhone" column="c_contactPhone" />
+            <result property="avatar" column="c_avatar" />
+            <result property="phone" column="c_phone" />
+            <result property="industry" column="c_industry" />
+            <result property="link" column="c_link" />
+            <result property="logo" column="c_logo" />
+            <result property="verified" column="c_verified" />
+        </association>
+    </resultMap>
+	
+    <sql id="insertBaseColumns" >
+        p_companyId, p_title, p_ptype, p_area, p_addr, p_startDate, p_endDate, p_startTime, p_endTime, p_salary, p_stuSalary, p_unit, p_minDays, p_continuous, p_count, p_retention, p_intro, p_reqGender, p_reqEdu, p_reqGrade, p_reqMajor, p_reqLang, p_reqLangLevel, p_active
+    </sql>
+    
+    <sql id="selectBaseColumns" >
+        p_id, p_companyId, p_title, p_ptype, p_area, p_addr, p_startDate, p_endDate, p_startTime, p_endTime, p_salary, p_stuSalary, p_unit, p_minDays, p_continuous, p_count, p_retention, p_intro, p_reqGender, p_reqEdu, p_reqGrade, p_reqMajor, p_reqLang, p_reqLangLevel, p_createTime, p_active
+    </sql>
+	
+    <sql id="selectExtColumns">
+        <include refid="selectBaseColumns" />,
+        c_accountId, c_name, c_addr,  c_type, c_contact, c_contactPos, c_contactPhone, c_avatar, c_phone, c_industry, c_link, c_logo, c_verified, c_priority, c_frozen
+    </sql>
+	
+    <sql id="joinedTable" >
+        xi_position join xi_company on p_companyid = c_id
+    </sql>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="Position">
+        insert into xi_position (<include refid="insertBaseColumns" />) 
+        values (#{companyId}, #{title}, #{ptype}, #{area}, #{addr}, #{startDate}, #{endDate}, #{startTime}, #{endTime}, #{salary}, #{stuSalary}, #{unit}, #{minDays}, #{continuous}, #{count}, #{retention}, #{intro}, #{reqGender}, #{reqEdu}, #{reqGrade}, #{reqMajor}, #{reqLang}, #{reqLangLevel}, #{active})
+    </insert>
+    
+    <insert id="collect">
+        insert into xi_stuPosCollect (c_stuId, c_posId) 
+        values (#{stuId}, #{posId});
+    </insert>
+	
+    <select id="selectCollected" resultType="int">
+        select count(*) from xi_stuPosCollect where c_stuId = #{stuId} and c_posId = #{posId}
+    </select>
+	
+    <delete id="uncollect">
+        delete from xi_stuPosCollect where c_stuId = #{stuId} and c_posId = #{posId}
+    </delete>
+    
+    <update id="update" parameterType="Position">
+        update xi_position 
+        <trim prefix="set" suffixOverrides=",">
+            <if test="companyId != null"> p_companyId = #{companyId}, </if>
+            <if test="title != null"> p_title = #{title}, </if>
+            <if test="ptype != null"> p_ptype = #{ptype}, </if>
+            <if test="area != null"> p_area = #{area}, </if>
+            <if test="addr != null"> p_addr = #{addr}, </if>
+            <if test="startDate != null"> p_startDate = #{startDate}, </if>
+            <if test="endDate != null"> p_endDate = #{endDate}, </if>
+            <if test="startTime != null"> p_startTime = #{startTime}, </if>
+            <if test="endTime != null"> p_endTime = #{endTime}, </if>
+            <if test="salary != null"> p_salary = #{salary}, </if>
+            <if test="stuSalary != null"> p_stuSalary = #{stuSalary}, </if>
+            <if test="unit != null"> p_unit = #{unit}, </if>
+            <if test="minDays != null"> p_minDays = #{minDays}, </if>
+            <if test="continuous != null"> p_continuous = #{continuous}, </if>
+            <if test="count != null"> p_count = #{count}, </if>
+            <if test="retention != null"> p_retention = #{retention}, </if>
+            <if test="intro != null"> p_intro = #{intro}, </if>
+            <if test="reqGender != null"> p_reqGender = #{reqGender}, </if>
+            <if test="reqEdu != null"> p_reqEdu = #{reqEdu}, </if>
+            <if test="reqGrade != null"> p_reqGrade = #{reqGrade}, </if>
+            <if test="reqMajor != null"> p_reqMajor = #{reqMajor}, </if>
+            <if test="reqLang != null"> p_reqLang = #{reqLang}, </if>
+            <if test="reqLangLevel != null"> p_reqLangLevel = #{reqLangLevel}, </if>
+            <if test="active != null"> p_active = #{active}, </if>
+        </trim>
+        where p_id = #{id}
+    </update>
+
+    <select id="selectOne" parameterType="int" resultMap="positionResult">
+        select <include refid="selectExtColumns" />
+        from <include refid="joinedTable" />
+        where p_id = #{id}
+    </select>
+    	
+    <select id="selectByCompanyId" parameterType="int" resultMap="positionResult">
+        select <include refid="selectBaseColumns" />
+        from xi_position
+        where p_companyId = #{companyId}
+    </select>
+	
+    <sql id="whereList">
+        <trim prefix="where" suffixOverrides="and">
+            c_frozen = 0 and
+            <if test="company != null"> 
+                <if test="company.verified != null"> c_verified = #{company.verified} and </if>
+                <if test="company.industry != null"> c_industry = #{company.industry} and </if>
+                <if test="company.type != null"> c_type = #{company.type} and </if>
+                <if test="company.queryParams.industry != null">
+                    c_industry in 
+                    <foreach item="item" index="index" collection="company.queryParams.industry" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                    and 
+                </if>
+                <if test="company.queryParams.type != null">
+                    c_type in 
+                    <foreach item="item" index="index" collection="company.queryParams.type" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                    and 
+                </if>
+            </if>			
+            <if test="companyId != null"> p_companyId = #{companyId} and </if>
+            <if test="active != null"> p_active = #{active} and </if>
+            <if test="area != null"> p_area = #{area} and </if>
+            <if test="ptype != null"> p_ptype = #{ptype} and </if>
+            <if test="queryParams.ptype != null">
+                p_ptype in 
+                <foreach item="item" index="index" collection="queryParams.ptype" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                and 
+            </if>
+            <if test="queryParams.searchKey != null">
+                (p_title LIKE concat('%', #{queryParams.searchKey}, '%')
+                or c_name LIKE concat('%', #{queryParams.searchKey}, '%')) and
+            </if>
+            
+        </trim>
+    </sql>
+    
+    <select id="selectList" parameterType="Position" resultMap="positionResult">
+        select <include refid="selectExtColumns" />
+        from <include refid="joinedTable" />
+        <include refid="whereList" />
+        order by c_priority desc, p_priority desc, p_createtime desc
+    </select>
+    
+    <select id="selectCount" parameterType="Position" resultType="int">
+        select count(*)
+        from <include refid="joinedTable" />
+        <include refid="whereList" />
+    </select>
+    
+    <select id="selectCollectedList" resultMap="positionResult">
+        select <include refid="selectExtColumns" />
+        from <include refid="joinedTable" />
+        join xi_stuPosCollect on c_posId = p_id
+        where c_stuId = #{stuId}
+        order by xi_stuPosCollect.c_id desc;
+    </select>
+    
+    <select id="selectCollectedCount" parameterType="Position" resultType="int">
+        select count(*)
+        from xi_position
+        join xi_stuPosCollect on c_posId = p_id
+        where c_stuId = #{stuId}
+    </select>
+	
+    <delete id="delete" parameterType="int">
+        delete from xi_position where p_id = #{id}
+    </delete>
+   	
+</mapper>

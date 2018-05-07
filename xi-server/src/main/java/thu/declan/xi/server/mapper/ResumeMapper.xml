@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="thu.declan.xi.server.mapper.ResumeMapper">
+
+	<resultMap type="Resume" id="resumeResult">
+		<result property="id" column="r_id" />
+		<result property="companyId" column="p_companyId" />
+		<result property="positionId" column="r_positionId" />
+		<result property="stuId" column="r_stuId" />
+		<result property="state" column="r_state" />
+		<result property="salary" column="r_salary" />
+		<result property="stuSalary" column="r_stuSalary" />
+		<result property="unit" column="r_unit" />
+		<result property="interviewTime" column="r_interviewTime" />
+		<result property="interviewPlace" column="r_interviewPlace" />
+		<result property="contact" column="r_contact" />
+		<result property="contactPhone" column="r_contactPhone" />
+		<result property="offerPlace" column="r_offerPlace" />
+		<result property="offerTime" column="r_offerTime" />
+		<result property="commentStu" column="r_commentStu" />
+		<result property="commentComp" column="r_commentComp" />
+		<result property="createTime" column="r_createTime" />
+		<result property="endTime" column="r_endTime" />
+		<association property="student" javaType="Student">
+			<result property="id" column="s_id" />
+			<result property="accountId" column="s_accountId" />
+			<result property="name" column="s_name" />
+			<result property="idNo" column="s_idNo" />
+			<result property="phone" column="s_phone" />
+			<result property="gender" column="s_gender" />
+			<result property="education" column="s_education" />
+			<result property="major" column="s_major" />
+			<result property="area" column="s_area" />
+			<result property="email" column="s_email" />
+			<result property="school" column="s_school" />
+			<result property="language" column="s_language" />
+			<result property="langLevel" column="s_langLevel" />
+			<result property="grade" column="s_grade" />
+			<result property="stuCard" column="s_stuCard" />
+			<result property="certs" column="s_certs" />
+			<result property="selfEval" column="s_selfEval" />
+			<result property="socialExp" column="s_socialExp" />
+			<result property="workExp" column="s_workExp" />
+			<result property="avatar" column="s_avatar" />
+			<result property="subscription" column="s_subscription" />
+		</association>
+		<association property="position" javaType="Position">
+			<result property="id" column="r_positionId" />
+			<result property="companyId" column="p_companyId" />
+			<result property="title" column="p_title" />
+			<result property="area" column="p_area" />
+			<result property="addr" column="p_addr" />
+			<result property="startDate" column="p_startDate" />
+			<result property="endDate" column="p_endDate" />
+			<result property="startTime" column="p_startTime" />
+			<result property="endTime" column="p_endTime" />
+			<result property="salary" column="p_salary" />
+			<result property="stuSalary" column="p_stuSalary" />
+			<result property="unit" column="p_unit" />
+			<result property="minDays" column="p_minDays" />
+			<result property="continuous" column="p_continuous" />
+			<result property="count" column="p_count" />
+			<result property="retention" column="p_retention" />
+			<result property="intro" column="p_intro" />
+			<result property="reqGender" column="p_reqGender" />
+			<result property="reqEdu" column="p_reqEdu" />
+			<result property="reqGrade" column="p_reqGrade" />
+			<result property="reqMajor" column="p_reqMajor" />
+			<result property="reqLang" column="p_reqLang" />
+			<result property="reqLangLevel" column="p_reqLangLevel" />
+			<result property="createTime" column="p_createTime" />
+			<association property="company" javaType="Company">
+				<id property="id" column="p_companyId"/>
+				<result property="accountId" column="c_accountId" />
+				<result property="name" column="c_name" />
+				<result property="addr" column="c_addr" />
+				<result property="type" column="c_type" />
+				<result property="contact" column="c_contact" />
+				<result property="contactPos" column="c_contactPos" />
+				<result property="contactPhone" column="c_contactPhone" />
+				<result property="avatar" column="c_avatar" />
+				<result property="phone" column="c_phone" />
+				<result property="industry" column="c_industry" />
+				<result property="link" column="c_link" />
+				<result property="logo" column="c_logo" />
+				<result property="verified" column="c_verified" />
+			</association>
+		</association>
+	</resultMap>
+	
+	<sql id="insertBaseColumns" >
+		r_positionId, r_stuId, r_salary, r_stuSalary, r_unit, r_state, r_commentStu, r_commentComp, r_endTime
+	</sql>
+    
+	<sql id="selectBaseColumns" >
+		xi_resume.*
+		<!--r_id, r_positionId, r_stuId, r_state, r_interviewTime, r_commentStu, r_commentComp, r_createTime, r_endTime-->
+	</sql>
+	
+	<sql id="selectExtColumns" >
+		<include refid="selectBaseColumns" />, xi_position.*, xi_student.*,
+		c_accountId, c_name, c_addr, c_type, c_contact, c_contactPos, c_contactPhone, c_avatar, c_phone, c_industry, c_link, c_logo, c_verified
+	</sql>
+	
+	<sql id="joinedTable" >
+		xi_resume
+		inner join xi_student on xi_resume.r_stuId = xi_student.s_id
+		inner join xi_position on xi_resume.r_positionId = xi_position.p_id
+		inner join xi_company on xi_position.p_companyId = xi_company.c_id
+	</sql>
+    
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="Resume">
+		insert into xi_resume (<include refid="insertBaseColumns" />) 
+		values (#{positionId}, #{stuId}, #{salary}, #{stuSalary}, #{unit}, #{state}, #{commentStu}, #{commentComp}, #{endTime})
+	</insert>
+    
+	<update id="update" parameterType="Resume">
+		update xi_resume 
+		<trim prefix="set" suffixOverrides=",">
+			<if test="state != null"> r_state = #{state}, </if>
+			<if test="salary != null"> r_salary = #{salary}, </if>
+			<if test="stuSalary != null"> r_stuSalary = #{stuSalary}, </if>
+			<if test="unit != null"> r_unit = #{unit}, </if>
+			<if test="interviewTime != null"> r_interviewTime = #{interviewTime}, </if>
+			<if test="interviewPlace != null"> r_interviewPlace = #{interviewPlace}, </if>
+			<if test="contact != null"> r_contact = #{contact}, </if>
+			<if test="contactPhone != null"> r_contactPhone = #{contactPhone}, </if>
+			<if test="offerPlace != null"> r_offerPlace = #{offerPlace}, </if>
+			<if test="offerTime != null"> r_offerTime = #{offerTime}, </if>
+			<if test="commentStu != null"> r_commentStu = #{commentStu}, </if>
+			<if test="commentComp != null"> r_commentComp = #{commentComp}, </if>
+			<if test="endTime != null"> r_endTime = #{endTime}, </if>
+		</trim>
+		where r_id = #{id}
+	</update>
+
+	<select id="selectOne" parameterType="int" resultMap="resumeResult">
+		select <include refid="selectExtColumns" />
+		from <include refid="joinedTable" />
+		where r_id = #{id}
+	</select>
+    	
+	<select id="selectByPositionId" parameterType="int" resultMap="resumeResult">
+		select <include refid="selectBaseColumns" />
+		from xi_resume
+		where r_positionId = #{positionId}
+	</select>
+	
+	<select id="selectByStudentId" parameterType="int" resultMap="resumeResult">
+		select <include refid="selectBaseColumns" />
+		from xi_resume
+		where r_stuId = #{studentId}
+	</select>
+	
+	<sql id="whereList" >
+		<trim prefix="where" suffixOverrides="and">
+			<if test="positionId != null"> r_positionId = #{positionId} and </if>
+			<if test="companyId != null"> p_companyId = #{companyId} and </if>
+			<if test="stuId != null"> r_stuId = #{stuId} and </if>
+			<if test="state != null"> r_state = #{state} and </if>
+            <if test="endTime != null"> r_endTime &gt; #{endTime} and </if>
+			<if test="queryStates != null"> 
+				r_state in 
+				<foreach item="item" index="index" collection="queryStates" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+				and 
+			</if>
+		</trim>
+	</sql>
+    
+	<select id="selectList" parameterType="Resume" resultMap="resumeResult">
+		select <include refid="selectExtColumns" />
+		from <include refid="joinedTable" />
+		<include refid="whereList" />
+	</select>
+    
+	<select id="selectCount" parameterType="Resume" resultType="int">
+		select count(*)
+		from <include refid="joinedTable" />
+		<include refid="whereList" />
+	</select>
+   	
+</mapper>

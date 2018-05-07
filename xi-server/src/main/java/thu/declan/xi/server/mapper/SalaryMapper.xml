@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="thu.declan.xi.server.mapper.SalaryMapper">
+
+    <resultMap type="Salary" id="salaryResult">
+        <result property="id" column="s_id" />
+        <result property="resumeId" column="s_resumeId" />
+		<result property="companyId" column="s_companyId" />
+		<result property="stuId" column="s_stuId" />
+		<result property="stuAccount" column="a_phone" />
+		<result property="month" column="s_month" />
+        <result property="workDays" column="s_workDays" />
+        <result property="value" column="s_value" />
+        <result property="stuValue" column="s_stuValue" />
+        <result property="stuComment" column="s_stuComment" />
+        <result property="state" column="s_state" />
+        <result property="createTime" column="s_createTime" />
+        <result property="payTime" column="s_payTime" />
+        <result property="updateTime" column="s_updateTime" />
+    </resultMap>
+	
+    <sql id="insertBaseColumns" >
+        s_resumeId, s_companyId, s_stuId, s_month, s_workDays, s_value, s_stuValue, s_state
+    </sql>
+    
+    <sql id="selectBaseColumns" >
+		xi_salary.*
+    </sql>
+	
+	<sql id="selectExtColumns" >
+		xi_salary.*, s_name, c_name, stu_account.a_phone
+    </sql>
+	
+	<sql id="joinedTable">
+		xi_salary
+		join xi_student on xi_student.s_id = xi_salary.s_stuId
+		join xi_company on xi_company.c_id = xi_salary.s_companyId
+		join xi_account stu_account on stu_account.a_id = xi_student.s_accountId
+	</sql>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="Salary">
+        insert into xi_salary (<include refid="insertBaseColumns" />) 
+        values (#{resumeId}, #{companyId}, #{stuId}, #{month}, #{workDays}, #{value}, #{stuValue}, #{state})
+    </insert>
+	
+    <update id="update" parameterType="Salary">
+        update xi_salary 
+        <trim prefix="set" suffixOverrides=",">
+			<if test="workDays != null"> s_workDays = #{workDays}, </if>
+            <if test="value != null"> s_value = #{value}, </if>
+            <if test="stuValue != null"> s_stuValue = #{stuValue}, </if>
+            <if test="stuComment != null"> s_stuComment = #{stuComment}, </if>
+            <if test="state != null"> s_state = #{state}, </if>
+            <if test="payTime != null"> s_payTime = #{payTime}, </if>
+            <if test="updateTime != null"> s_updateTime = #{updateTime}, </if>
+        </trim>
+        where s_id = #{id}
+    </update>
+    
+    <select id="selectOne" parameterType="int" resultMap="salaryResult">
+        select <include refid="selectBaseColumns" />
+        from xi_salary
+        where s_id = #{id}
+    </select>
+	
+	<sql id="whereList" >
+		<trim prefix="where" suffixOverrides="and">
+			<if test="resumeId != null">  s_resumeId = #{resumeId} and </if>
+			<if test="companyId != null">  s_companyId = #{companyId} and </if>
+			<if test="stuId != null">  s_stuId = #{stuId} and </if>
+			<if test="month != null">  s_month = #{month} and </if>
+			<if test="state != null">  s_state = #{state} and </if>
+            <if test="updateTime != null">  s_updateTime &lt; #{updateTime} and </if>
+			<if test="queryStates != null"> 
+				s_state in 
+				<foreach item="item" index="index" collection="queryStates" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+				and 
+			</if>
+			<if test="queryParams.compName != null">
+				c_name = #{queryParams.compName} and
+			</if>
+			<if test="queryParams.stuName != null">
+				s_name = #{queryParams.stuName} and
+			</if>
+			<if test="queryParams.stuAccount != null">
+				stu_account.a_phone = #{queryParams.stuAccount} and
+			</if>
+				
+        </trim>
+	</sql>
+    	
+    <select id="selectList" parameterType="Salary" resultMap="salaryResult">
+        select <include refid="selectExtColumns" />
+        from <include refid="joinedTable" />
+        <include refid="whereList" />
+		order by s_createTime desc
+    </select>
+    
+    <select id="selectCount" parameterType="Salary" resultType="int">
+        select count(*)
+        from <include refid="joinedTable" />
+        <include refid="whereList" />
+    </select>
+	
+    <delete id="delete" parameterType="int">
+        delete from xi_salary where s_id = #{id}
+    </delete>
+   		
+</mapper>
+

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    
+    <properties>
+        <property name="dialect" value="mysql" />
+		<property name="pageSqlId" value=".*selectList$" />
+    </properties>
+    
+    <typeAliases>
+        <typeAlias alias="ZeroIfNullDouble" type="thu.declan.xi.server.mybatis.typehandler.ZeroIfNullDouble" />
+		<typeAlias alias="JSONHandler" type="thu.declan.xi.server.mybatis.typehandler.JSONHandler" />
+		
+        <typeAlias alias="Admin" type="thu.declan.xi.server.model.Admin" />
+        <typeAlias alias="Account" type="thu.declan.xi.server.model.Account" />
+        <typeAlias alias="Student" type="thu.declan.xi.server.model.Student" />
+        <typeAlias alias="Company" type="thu.declan.xi.server.model.Company" />
+        <typeAlias alias="Position" type="thu.declan.xi.server.model.Position" />
+		<typeAlias alias="Resume" type="thu.declan.xi.server.model.Resume" />
+		<typeAlias alias="Rate" type="thu.declan.xi.server.model.Rate" />
+		<typeAlias alias="AvgRate" type="thu.declan.xi.server.model.AvgRate" />
+		<typeAlias alias="News" type="thu.declan.xi.server.model.News" />
+        <typeAlias alias="PointLog" type="thu.declan.xi.server.model.PointLog" />
+        <typeAlias alias="Notification" type="thu.declan.xi.server.model.Notification" />
+        <typeAlias alias="Code" type="thu.declan.xi.server.model.Code" />
+		<typeAlias alias="Salary" type="thu.declan.xi.server.model.Salary" />
+        <typeAlias alias="Feedback" type="thu.declan.xi.server.model.Feedback" />
+        <typeAlias alias="Withdraw" type="thu.declan.xi.server.model.Withdraw" />
+        
+    </typeAliases>
+	
+    <typeHandlers>
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="thu.declan.xi.server.model.Admin$Role" />
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="thu.declan.xi.server.model.Account$Role" />
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="thu.declan.xi.server.model.Student$Gender" />
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="thu.declan.xi.server.model.Student$Education" />
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="thu.declan.xi.server.model.Student$LangLevel" />
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="thu.declan.xi.server.model.Resume$RState" />
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="thu.declan.xi.server.model.PointLog$PType" />
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="thu.declan.xi.server.model.Notification$NType" />
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="thu.declan.xi.server.model.Rate$Direction" />
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="thu.declan.xi.server.model.Salary$SState" />
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="thu.declan.xi.server.model.Feedback$FState" />
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="thu.declan.xi.server.model.Withdraw$WState" />
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="thu.declan.xi.server.model.Withdraw$Channel" />
+        <typeHandler handler="thu.declan.xi.server.mybatis.typehandler.JSONHandler" javaType="java.util.Map" jdbcType="VARCHAR" /> 
+		<typeHandler handler="thu.declan.xi.server.mybatis.typehandler.JSONHandler" javaType="java.util.List" jdbcType="VARCHAR" /> 
+	</typeHandlers>
+	
+    <plugins>
+        <plugin interceptor="thu.declan.xi.server.mybatis.plugin.PaginationInterceptor" />
+    </plugins>
+    
+</configuration>
+

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="thu.declan.xi.server.mapper.NotificationMapper">
+
+    <resultMap type="Notification" id="notificationResult">
+        <result property="id" column="n_id" />
+        <result property="accountId" column="n_accountId" />
+		<result property="type" column="n_type" />
+		<result property="refId" column="n_refId" />
+        <result property="msg" column="n_msg" />
+        <result property="read" column="n_read" />
+        <result property="createTime" column="n_createTime" />
+    </resultMap>
+	
+    <sql id="insertBaseColumns" >
+        n_accountId, n_msg, n_type, n_refId
+    </sql>
+    
+    <sql id="selectBaseColumns" >
+		n_id, n_accountId, n_msg, n_type, n_refId, n_read, n_createTime
+    </sql>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="Notification">
+        insert into xi_notification (<include refid="insertBaseColumns" />) 
+        values (#{accountId}, #{msg}, #{type}, #{refId})
+    </insert>
+	
+    <update id="update" parameterType="Notification">
+        update xi_notification 
+        <trim prefix="set" suffixOverrides=",">
+            <if test="read != null"> n_read = #{read}, </if>
+        </trim>
+        where n_id = #{id}
+    </update>
+    
+    <update id="setRead">
+        update xi_notification set n_read = 1
+        where n_id in 
+        <foreach item="item" index="index" collection="notis" open="(" separator="," close=")">
+            #{item.id}
+        </foreach>
+    </update>
+    
+    <select id="unreadCnt" resultType="int">
+        select count(*) from xi_notification
+        where n_accountId = #{accountId} and n_read = 0
+    </select>
+
+    <select id="selectOne" parameterType="int" resultMap="notificationResult">
+        select <include refid="selectBaseColumns" />
+        from xi_notification
+        where n_id = #{id}
+    </select>
+    	
+    <select id="selectList" parameterType="Notification" resultMap="notificationResult">
+        select <include refid="selectBaseColumns" />
+        from xi_notification
+        <trim prefix="where" suffixOverrides="and">
+			<if test="accountId != null">  n_accountId = #{accountId} and </if>
+			<if test="read != null">  n_read = #{read} and </if>
+        </trim>
+		order by n_read asc, n_createTime desc
+    </select>
+    
+    <select id="selectCount" parameterType="Notification" resultType="int">
+        select count(*)
+        from xi_notification
+        <trim prefix="where" suffixOverrides="and">
+			<if test="accountId != null">  n_accountId = #{accountId} and </if>
+			<if test="read != null">  n_read = #{read} and </if>
+        </trim>
+    </select>
+	
+    <delete id="delete" parameterType="int">
+        delete from xi_notification where n_id = #{id}
+    </delete>
+   		
+</mapper>
+

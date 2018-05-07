@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="thu.declan.xi.server.mapper.PointLogMapper">
+
+    <resultMap type="PointLog" id="pointLogResult">
+        <result property="id" column="p_id" />
+        <result property="accountId" column="p_accountId" />
+        <result property="type" column="p_type" />
+        <result property="value" column="p_value" />
+        <result property="refId" column="p_refId" />
+        <result property="createTime" column="p_createTime" />
+    </resultMap>
+	
+    <sql id="insertBaseColumns" >
+        p_accountId, p_type, p_value, p_refId
+    </sql>
+    
+    <sql id="selectBaseColumns" >
+        p_id, p_accountId, p_type, p_value, p_refId, p_createTime
+    </sql>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="PointLog">
+        insert into xi_pointlog (<include refid="insertBaseColumns" />) 
+        values (#{accountId}, #{type}, #{value}, #{refId})
+    </insert>
+        
+    <update id="update" parameterType="PointLog">
+        update xi_pointlog 
+        where p_id = #{id}
+    </update>
+
+    <select id="selectOne" parameterType="int" resultMap="pointLogResult">
+        select <include refid="selectBaseColumns" />
+        from xi_pointlog
+        where p_id = #{id}
+    </select>
+    	
+    <select id="selectByAccountId" parameterType="int" resultMap="pointLogResult">
+        select <include refid="selectBaseColumns" />
+        from xi_pointlog
+        where p_accountId = #{accountId}
+    </select>
+    
+    <select id="selectList" parameterType="PointLog" resultMap="pointLogResult">
+        select <include refid="selectBaseColumns" />
+        from xi_pointlog
+        <trim prefix="where" suffixOverrides="and">
+            <if test="accountId != null"> p_accountId = #{accountId} and </if>
+            <if test="type != null"> p_type = #{type} and </if>
+            <if test="refId != null"> p_refId = #{refId} and </if>
+        </trim>
+        order by p_createTime desc
+    </select>
+    
+    <select id="selectCount" parameterType="PointLog" resultType="int">
+        select count(*)
+        from xi_pointlog
+        <trim prefix="where" suffixOverrides="and">
+            <if test="accountId != null"> p_accountId = #{accountId} and </if>
+            <if test="type != null"> p_type = #{type} and </if>
+            <if test="refId != null"> p_refId = #{refId} and </if>
+        </trim>
+    </select>
+	
+    <delete id="delete" parameterType="int">
+        delete from xi_pointlog where p_id = #{id}
+    </delete>
+   	
+</mapper>

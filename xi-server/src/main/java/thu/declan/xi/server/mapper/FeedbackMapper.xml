@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="thu.declan.xi.server.mapper.FeedbackMapper">
+
+    <resultMap type="Feedback" id="feedbackResult">
+        <result property="id" column="f_id" />
+        <result property="accountId" column="f_accountId" />
+        <result property="content" column="f_content" />
+        <result property="state" column="f_state" />
+        <result property="createTime" column="f_createTime" />
+    </resultMap>
+	
+    <sql id="insertBaseColumns" >
+        f_accountId, f_content
+    </sql>
+    
+    <sql id="selectBaseColumns" >
+		xi_feedback.*
+    </sql>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="Feedback">
+        insert into xi_feedback (<include refid="insertBaseColumns" />) 
+        values (#{accountId}, #{content})
+    </insert>
+    
+    <update id="update" parameterType="Feedback">
+        update xi_feedback 
+        <trim prefix="set" suffixOverrides=",">
+            <if test="accountId != null"> f_accountId = #{accountId}, </if>
+            <if test="state != null"> f_state = #{state}, </if>
+        </trim>
+        where f_id = #{id}
+    </update>
+
+    <select id="selectOne" parameterType="int" resultMap="feedbackResult">
+        select <include refid="selectBaseColumns" />
+        from xi_feedback
+        where f_id = #{id}
+    </select>
+    	
+    <select id="selectList" parameterType="Feedback" resultMap="feedbackResult">
+        select <include refid="selectBaseColumns" />
+        from xi_feedback
+        <trim prefix="where" suffixOverrides="and">
+            <if test="accountId != null">  f_accountId = #{accountId} and </if>      
+			<if test="state != null">  f_state = #{state} and </if>
+        </trim>
+    </select>
+    
+    <select id="selectCount" parameterType="Feedback" resultType="int">
+        select count(*)
+        from xi_feedback
+        <trim prefix="where" suffixOverrides="and">
+            <if test="accountId != null">  f_accountId = #{accountId} and </if>      
+			<if test="state != null">  f_state = #{state} and </if>
+        </trim>
+    </select>
+	
+    <delete id="delete" parameterType="int">
+        delete from xi_feedback where f_id = #{id}
+    </delete>
+  	
+</mapper>
+
+

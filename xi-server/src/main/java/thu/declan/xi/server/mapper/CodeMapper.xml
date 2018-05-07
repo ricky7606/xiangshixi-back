@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="thu.declan.xi.server.mapper.CodeMapper">
+
+	<resultMap type="Code" id="codeResult">
+		<result property="id" column="c_id" />
+		<result property="phone" column="c_phone" />
+		<result property="code" column="c_code" />
+        <result property="createTime" column="c_createTime" />
+	</resultMap>
+	
+	<sql id="insertBaseColumns" >
+		c_phone, c_code
+	</sql>
+    
+	<sql id="selectBaseColumns" >
+		c_id, c_phone, c_code, c_createTime
+	</sql>
+    
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="Code">
+		insert into xi_code (<include refid="insertBaseColumns" />) 
+		values (#{phone}, #{code})
+	</insert>
+    
+	<update id="update" parameterType="Code">
+		update xi_code 
+		<trim prefix="set" suffixOverrides=",">
+		</trim>
+		where c_id = #{id}
+	</update>
+
+	<select id="selectOne" parameterType="int" resultMap="codeResult">
+		select <include refid="selectBaseColumns" />
+		from xi_code
+		where c_id = #{id}
+	</select>
+    
+	<select id="selectList" parameterType="Code" resultMap="codeResult">
+		select <include refid="selectBaseColumns" />
+		from xi_code
+		<trim prefix="where" suffixOverrides="and">
+			<if test="phone != null"> c_phone = #{phone} and </if>
+            c_createTime >= DATE_SUB(NOW(), INTERVAL 1 MINUTE) and
+		</trim>
+	</select>
+    
+	<select id="selectCount" parameterType="Code" resultType="int">
+		select count(*)
+		from xi_code
+		<trim prefix="where" suffixOverrides="and">
+			<if test="phone != null"> c_phone = #{phone} and </if>
+            c_createTime >= DATE_SUB(NOW(), INTERVAL 1 MINUTE) and
+		</trim>
+	</select>
+    
+    <select id="verifyCode" parameterType="Code" resultMap="codeResult">
+		select <include refid="selectBaseColumns" />
+		from xi_code
+		<trim prefix="where" suffixOverrides="and">
+			<if test="phone != null"> c_phone = #{phone} and </if>
+            <if test="code != null"> c_code = #{code} and </if>
+            c_createTime >= DATE_SUB(NOW(), INTERVAL 10 MINUTE) and
+		</trim>
+        limit 1
+	</select>
+	
+	<delete id="delete" parameterType="int">
+		delete from xi_code where c_id = #{id}
+	</delete>
+   	
+</mapper>
