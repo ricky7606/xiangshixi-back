@@ -162,7 +162,7 @@
                 (p_title LIKE concat('%', #{queryParams.searchKey}, '%')
                 or c_name LIKE concat('%', #{queryParams.searchKey}, '%')) and
             </if>
-            
+            <if test="reqEdu != null">p_reqEdu = #{reqEdu} and</if>
         </trim>
     </sql>
     

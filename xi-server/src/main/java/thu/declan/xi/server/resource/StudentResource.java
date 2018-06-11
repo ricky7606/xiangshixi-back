@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+//import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -41,9 +42,11 @@ import thu.declan.xi.server.model.Notification;
 import thu.declan.xi.server.model.Pagination;
 import thu.declan.xi.server.model.PointLog;
 import thu.declan.xi.server.model.PointLog.PType;
+//import thu.declan.xi.server.model.Resume.RState;
 import thu.declan.xi.server.model.Rate;
 import thu.declan.xi.server.model.Resume;
 import thu.declan.xi.server.model.Salary;
+//import thu.declan.xi.server.service.PositionService;
 import thu.declan.xi.server.service.RateService;
 import thu.declan.xi.server.service.ResumeService;
 import thu.declan.xi.server.service.SalaryService;
@@ -67,7 +70,7 @@ public class StudentResource extends BaseResource {
 
 	@Autowired
 	private SalaryService salaryService;
-
+	
 	@Autowired
 	private RateService rateService;
 
@@ -237,6 +240,7 @@ public class StudentResource extends BaseResource {
 	public Student login(Account acc) throws ApiException {
 		acc.setRole(Account.Role.STUDENT);
 		acc = loginAccount(acc);
+//		LOGGER.debug("StudentResource login acc =" + acc.toString());
 		try {
 			Student stu = studentService.getByAccountId(acc.getId());
 			if (stu.isFrozen()) {
@@ -332,10 +336,14 @@ public class StudentResource extends BaseResource {
 			studentId = currentEntityId();
 		}
 		Resume selector = new Resume();
+//		if (!states.isEmpty()&&!states.get(0).equals(Resume.RState.HISTORY)) {
 		if (!states.isEmpty()) {
-			selector.setQueryStates(states);
+//			if(!states.get(0).equals("HISTORY")){
+				selector.setQueryStates(states);//NEW
+//				LOGGER.debug("************"+states.toString()+"*****************");
+//			}
 		}
-		selector.setStuId(studentId);
+		selector.setStuId(studentId); //当前学生id
 		List<Resume> resumes = null;
 		Pagination pagination = new Pagination(pageSize, pageIndex);
 		try {
@@ -409,7 +417,7 @@ public class StudentResource extends BaseResource {
 			studentId = currentEntityId();
 		}
 		Rate selector = new Rate();
-		selector.setStuId(studentId);
+		selector.setStuId(studentId);//设置学生id
 		selector.setDirection(Rate.Direction.COMP_TO_STU);
 		List<Rate> rates = null;
 		Pagination pagination = new Pagination(pageSize, pageIndex);

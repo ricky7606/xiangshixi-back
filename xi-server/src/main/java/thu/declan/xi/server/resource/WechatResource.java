@@ -42,14 +42,14 @@ public class WechatResource extends BaseResource {
     @Path("/accessToken")
     @Produces(MediaType.APPLICATION_JSON)
     public String getAccessToken(@QueryParam("code") String code, @QueryParam("mobile") Boolean mobile) {
-        String url = "https://api.weixin.qq.com/sns/oauth2/access_token";
+        String url = "https://api.weixin.qq.com/sns/oauth2/access_token"; // 获取微信用户的openid 和 access_token
         String appid, appsecret;
         if (mobile != null && mobile) {
-            appid = Constant.WECHAT_APPID;
-            appsecret = Constant.WECHAT_SECRET;
+            appid = Constant.WECHAT_APPID; // wx3157ff5481ec5025
+            appsecret = Constant.WECHAT_SECRET; // 3af4a208195f3b7aa3ddc50f5d6e9e09
         } else {
-            appid = Constant.WECHAT_OPEN_APPID;
-            appsecret = Constant.WECHAT_OPEN_SECRET;
+            appid = Constant.WECHAT_OPEN_APPID; // wx44895bec275b61e6
+            appsecret = Constant.WECHAT_OPEN_SECRET; // 15d2424d3ec81b316972fc72b6ba6cec
         }
         String params = String.format("appid=%s&secret=%s&code=%s&grant_type=authorization_code", 
                 appid, appsecret, code);

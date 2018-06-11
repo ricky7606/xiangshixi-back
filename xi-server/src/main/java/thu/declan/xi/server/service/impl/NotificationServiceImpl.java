@@ -70,19 +70,19 @@ public class NotificationServiceImpl extends BaseTableServiceImpl<Notification> 
 	@Override
 	public Notification addNoti(int accountId, Notification.NType type, int refId, boolean sendEmail, String msgTpl, Object... args) {
 		Notification noti = new Notification();
-		noti.setAccountId(accountId);
+		noti.setAccountId(accountId);//15 WITHDRAW 1 true TPL_WITHDRAW null
 		noti.setType(type);
 		noti.setMsg(String.format(msgTpl, args));
 		noti.setRefId(refId);
 		try {
-			add(noti);
+			add(noti); // 添加消息
 		} catch (ServiceException ex) {
 			Logger.getLogger(NotificationServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		if (accountId == 0) {
 			return noti;
 		}
-		try {
+		try { // Email通知 提现用户 提现状态
 			if (sendEmail) {
 				Account acc = accountService.get(accountId);
 			String emailAddr;

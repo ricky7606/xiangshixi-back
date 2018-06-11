@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -14,6 +15,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,7 @@ import thu.declan.xi.server.model.Company;
 import thu.declan.xi.server.model.Resume;
 import thu.declan.xi.server.model.ListResponse;
 import thu.declan.xi.server.model.Notification;
+import thu.declan.xi.server.model.Pagination;
 import thu.declan.xi.server.model.PointLog.PType;
 import thu.declan.xi.server.model.Position;
 import thu.declan.xi.server.model.Rate;
@@ -76,7 +79,9 @@ public class ResumeResource extends BaseResource {
 		if (Account.Role.STUDENT.equals(currentRole())) {
 			resume.setStuId(currentEntityId());
 		}
+		LOGGER.debug("==================== stuId : "+resume.getStuId()+"====================");
 		Integer posId = resume.getPositionId();
+		LOGGER.debug("==================== posId : "+posId+"====================");
 		Position pos = null;
 		try {
 			pos = positionService.get(posId);
@@ -275,6 +280,29 @@ public class ResumeResource extends BaseResource {
 		}
 		LOGGER.debug("==================== leave ResumeResource getResumes ====================");
 		return new ListResponse(resumes);
+	}
+
+	@GET
+	@Path("/{studentId}/positions")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ListResponse<Resume> getPositionsByStu(@PathParam("studentId")Integer studentId,
+			@QueryParam("pageIndex") Integer pageIndex,
+			@QueryParam("pageSize") Integer pageSize) throws ApiException  {
+		LOGGER.debug("==================== enter ResumeResource getPositionsByStu studentId'"+studentId+"' ====================");
+		List<Resume> resumes = null;
+		Resume selector = new Resume();
+		selector.setStuId(studentId);
+		Pagination pagination = new Pagination(pageSize, pageIndex);
+		try {
+			resumes = resumeService.getList(selector,pagination);
+		} catch (ServiceException ex) {
+			String devMsg = "Service Exception [" + ex.getCode() + "] " + ex.getReason();
+			LOGGER.debug(devMsg);
+			handleServiceException(ex);
+		}
+		LOGGER.debug("==================== leave ResumeResource getPositionsByStu ====================");
+		return new ListResponse(resumes,pagination);
 	}
 
 	@GET

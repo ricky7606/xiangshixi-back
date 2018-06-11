@@ -27,7 +27,10 @@
         <result property="createTime" column="s_createTime" />
         <result property="frozen" column="s_frozen" />
     </resultMap>
-	
+	<!-- 排序规则 -->
+	<sql id="sort">
+		order by s_id DESC
+	</sql>
     <sql id="insertBaseColumns" >
         s_accountId, s_name, s_idNo, s_phone, s_gender, s_education, s_major, s_area, s_email, s_school, s_language, s_langLevel, s_grade, s_stuCard, s_certs, s_selfEval, s_socialExp, s_workExp, s_avatar, s_subscription
     </sql>
@@ -94,6 +97,7 @@
         select <include refid="selectBaseColumns" />
         from xi_student
         <include refid="whereList" />
+        <include refid="sort"/>
     </select>
     
     <select id="selectCount" parameterType="Student" resultType="int">

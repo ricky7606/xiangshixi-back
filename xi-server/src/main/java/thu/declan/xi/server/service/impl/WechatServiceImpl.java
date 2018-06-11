@@ -8,14 +8,19 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import thu.declan.xi.server.CacheConfig;
 import thu.declan.xi.server.Constant;
+import thu.declan.xi.server.exception.ApiException;
 import thu.declan.xi.server.exception.ServiceException;
 import thu.declan.xi.server.model.Notification;
+import thu.declan.xi.server.resource.WithdrawResource;
 import thu.declan.xi.server.service.WechatService;
 import weixin.popular.api.MessageAPI;
 import weixin.popular.api.PayMchAPI;
@@ -35,11 +40,14 @@ import weixin.popular.client.LocalHttpClient;
  */
 @Service("wechatService")
 public class WechatServiceImpl implements WechatService, InitializingBean {
+	private static final Logger LOGGER = LoggerFactory.getLogger(WithdrawResource.class);
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		LocalHttpClient.initMchKeyStore(Constant.WECHAT_MCH_ID, Constant.WECHAT_MCH_KEYPATH);
 	}
+	
+//	private static final Logger LOGGER = LoggerFactory.getLogger(BaseTableServiceImpl.class);
 
 	@Override
 	@Cacheable(CacheConfig.CACHE_ACCESS_TOKEN)
@@ -168,8 +176,10 @@ public class WechatServiceImpl implements WechatService, InitializingBean {
 //		String sign = EncryptionUtils.md5(string1).toUpperCase();
 //		trans.setSign(sign);
 		TransfersResult result = PayMchAPI.mmpaymkttransfersPromotionTransfers(trans, Constant.WECHAT_MCH_SECRET);
-		if (result.getErr_code() != null) {
+		if (result.getErr_code() != null) { // 109
+			LOGGER.error("result: "+ result + "Err_code: "+result.getErr_code() +"Err_code_des: " +result.getErr_code_des() + "Return_msg: " +result.getReturn_msg() + "Result_code: " +result.getResult_code());
 			throw new ServiceException(ServiceException.CODE_EXTERNAL_ERROR, "Wechat transfer failed: [" + result.getErr_code() + "] " + result.getErr_code_des());
+//			throw new ApiException(ServiceException.CODE_EXTERNAL_ERROR, "Wechat transfer failed: [" + result.getErr_code() + "] " + result.getErr_code_des(), result.getErr_code_des());
 		}
 	}
 

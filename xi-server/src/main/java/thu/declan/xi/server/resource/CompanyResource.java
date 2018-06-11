@@ -42,6 +42,7 @@ import thu.declan.xi.server.model.Rate;
 import thu.declan.xi.server.model.Resume;
 import thu.declan.xi.server.model.Salary;
 import thu.declan.xi.server.model.Student;
+import thu.declan.xi.server.model.Student.Education;
 import thu.declan.xi.server.service.CompanyService;
 import thu.declan.xi.server.service.PositionService;
 import thu.declan.xi.server.service.RateService;
@@ -156,7 +157,7 @@ public class CompanyResource extends BaseResource {
 	@GET
 	@Path("/export")
 	@Produces("application/xls")
-	@RolesAllowed({Constant.ROLE_ADMIN})
+	@RolesAllowed({Constant.ROLE_ADMIN}) // 导出企业xls
 	public Response exportCompanies(
 			@QueryParam("pageIndex") Integer pageIndex,
             @QueryParam("pageSize") Integer pageSize,
@@ -355,6 +356,7 @@ public class CompanyResource extends BaseResource {
     public ListResponse<Position> getCompanyPositions(@PathParam("companyId") int companyId,
             @QueryParam("pageIndex") Integer pageIndex,
             @QueryParam("pageSize") Integer pageSize,
+            @QueryParam("reqEdu") Education reqEdu,
             @QueryParam("active") Boolean active) throws ApiException {
         LOGGER.debug("==================== enter CompanyResource getPositiones ====================");
         if (companyId == 0) {
@@ -363,6 +365,7 @@ public class CompanyResource extends BaseResource {
         Position selector = new Position();
         selector.setCompanyId(companyId);
         selector.setActive(active);
+        selector.setReqEdu(reqEdu);
         Pagination pagination = new Pagination(pageSize, pageIndex);
         List<Position> positions = null;
         try {
@@ -445,7 +448,7 @@ public class CompanyResource extends BaseResource {
 	
 	@GET
     @Path("/{companyId}/salaries")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON) // 企业工资表查询
     public ListResponse<Salary> getCompanySalaries(@PathParam("companyId") int companyId,
 			@QueryParam("state") List<Salary.SState> states,
 			@QueryParam("month") String month,

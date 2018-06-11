@@ -6,6 +6,8 @@ import java.util.Calendar;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.web.bind.EscapedErrors;
+
 import thu.declan.xi.server.exception.ApiException;
 import thu.declan.xi.server.exception.ServiceException;
 import thu.declan.xi.server.model.Account;
@@ -94,14 +96,18 @@ public class BaseResource {
 	protected void handleServiceException(ServiceException ex) throws ApiException {
 		String devMsg = "Service Exception [" + ex.getCode() + "] " + ex.getReason();
 		switch (ex.getCode()) {
-			case ServiceException.CODE_DATABASE_ERR:
-				throw new ApiException(500, devMsg, "未知错误.");
-			case ServiceException.CODE_NO_SUCH_ELEMENT:
+			case ServiceException.CODE_DATABASE_ERR: // 100
+//				throw new ApiException(500, devMsg, "未知错误.");
+				throw new ApiException(500, devMsg, ex.getReason());
+			case ServiceException.CODE_NO_SUCH_ELEMENT: // 102
 				throw new ApiException(404, devMsg, "账号不存在.");
-			case ServiceException.CODE_WRONG_PASSWORD:
+			case ServiceException.CODE_WRONG_PASSWORD: // 104
 				throw new ApiException(403, devMsg, "密码错误.");
+			case ServiceException.CODE_EXTERNAL_ERROR: // 109
+				throw new ApiException(500, devMsg, ex.getReason());
 			default:
 				throw new ApiException(500, devMsg, "未知错误.");
+//				throw new ApiException(500, devMsg, ex.getReason());
 		}
 	}
 

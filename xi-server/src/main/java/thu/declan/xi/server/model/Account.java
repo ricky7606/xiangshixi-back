@@ -119,5 +119,12 @@ public class Account {
     public void setUnreadNotis(Integer unreadNotis) {
         this.unreadNotis = unreadNotis;
     }
+
+//	@Override
+//	public String toString() {
+//		return "Account [id=" + id + ", role=" + role + ", queryRoles=" + queryRoles + ", phone=" + phone + ", unionId="
+//				+ unionId + ", openId=" + openId + ", password=" + password + ", point=" + point + ", balance="
+//				+ balance + ", unreadNotis=" + unreadNotis + "]";
+//	}
     
 }

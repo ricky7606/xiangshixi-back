@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Date;
 import java.util.List;
 import thu.declan.xi.server.util.CustomJsonDateSerializer;
+import thu.declan.xi.server.util.WorkingDaysUtils;
 
 /**
  *
@@ -189,12 +190,16 @@ public class Salary extends QueryModel {
 	}
     
     public void updateValue(Resume r) {
-        double units = this.getWorkDays();
-        if (r.getUnit().contains("月")) {
-            units = units / 22;
+        double units = this.getWorkDays(); // 当前工作天数
+        if (r.getUnit().contains("月")) { // 判断薪资单位
+        	Double workingDays = WorkingDaysUtils.getWorkingDays().doubleValue();// 上月总工作日
+        	units = units / workingDays; // 计算工作日
+//        	value = WorkingDaysUtils.getRealVaule(r.getSalary() * ,2).doubleValue();
+//        	stuValue = WorkingDaysUtils.getRealVaule(r.getStuSalary(),2).doubleValue();
+//            units = units / 22;
         }
-        value = r.getSalary() * units;
-        stuValue = r.getStuSalary() * units;
+        value = WorkingDaysUtils.getRealVaule(r.getSalary() * units, 2).doubleValue(); // 计算企业金额
+        stuValue = WorkingDaysUtils.getRealVaule(r.getStuSalary() * units, 2).doubleValue(); // 计算学生金额
     }
 	
 	public void updateValue() {

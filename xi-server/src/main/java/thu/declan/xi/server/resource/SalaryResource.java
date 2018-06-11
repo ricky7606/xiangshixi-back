@@ -86,7 +86,7 @@ public class SalaryResource extends BaseResource {
 	@GET
 	@Path("/export")
 	@Produces("application/xls")
-	@RolesAllowed({Constant.ROLE_ADMIN})
+	@RolesAllowed({Constant.ROLE_ADMIN}) // 薪资导出
 	public Response exportSalaries(
 			@QueryParam("month") String month,
 			@QueryParam("stuName") String stuName,
@@ -146,7 +146,7 @@ public class SalaryResource extends BaseResource {
 	@Path("/{salaryId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Salary getSalary(@PathParam("salaryId") int salaryId) throws ApiException {
+	public Salary getSalary(@PathParam("salaryId") int salaryId) throws ApiException { // 查询学生薪资
 		LOGGER.debug("==================== enter SalaryResource getSalary ====================");
 		LOGGER.debug("salaryId: " + salaryId);
 		Salary salary = null;
@@ -164,6 +164,13 @@ public class SalaryResource extends BaseResource {
 		return salary;
 	}
 
+	/**
+	 * 修改工资表
+	 * @param salaryId
+	 * @param updater
+	 * @return
+	 * @throws ApiException
+	 */
 	@PUT
 	@Path("/{salaryId}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -184,7 +191,7 @@ public class SalaryResource extends BaseResource {
 			salary = getSalary(salaryId);
 			String compName = salary.getResume().getPosition().getCompany().getName();
 			Account acc = accountService.get(salary.getResume().getStudent().getAccountId());
-			if (updater.getState() == Salary.SState.WAIT_STU_CONFIRM) {
+			if (updater.getState() == Salary.SState.WAIT_STU_CONFIRM) { // 判断状态
 				Notification noti = this.notiService.addNoti(salary.getResume().getStudent().getAccountId(),
 						Notification.NType.SALARY, salaryId,
 						Notification.TPL_SALARY_CONFIRM,

@@ -24,8 +24,8 @@ public class Resume extends QueryModel {
         WORKING,
         ENDED,
         CANCELED,
-		COMMENTED;
-        
+		COMMENTED,
+		HISTORY;
         public static RState fromString(String str) {
             return Enum.valueOf(RState.class, str.toUpperCase());
         }        
@@ -271,6 +271,23 @@ public class Resume extends QueryModel {
 	public void setRate2(Rate rate2) {
 		this.rate2 = rate2;
 	}
+	private String remarkComp;
+	
+	private String remarkStu;
 
-    
+	public String getRemarkComp() {
+		return remarkComp;
+	}
+
+	public void setRemarkComp(String remarkComp) {
+		this.remarkComp = remarkComp;
+	}
+
+	public String getRemarkStu() {
+		return remarkStu;
+	}
+
+	public void setRemarkStu(String remarkStu) {
+		this.remarkStu = remarkStu;
+	}
 }

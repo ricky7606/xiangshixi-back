@@ -20,8 +20,8 @@ public class Withdraw {
         NEW,
         PASSED,
         REFUSED,
-        PAID;
-        
+        PAID,
+        AGAINREFUSED;
         public static WState fromString(String str) {
             return Enum.valueOf(WState.class, str.toUpperCase());
         }   
@@ -126,5 +126,12 @@ public class Withdraw {
     public void setPayTime(Date payTime) {
         this.payTime = payTime;
     }
+
+//	@Override
+//	public String toString() {
+//		return "Withdraw [id=" + id + ", accountId=" + accountId + ", account=" + account + ", student=" + student
+//				+ ", value=" + value + ", channel=" + channel + ", state=" + state + ", confirmed=" + confirmed
+//				+ ", createTime=" + createTime + ", payTime=" + payTime + "]";
+//	}
 
 }

@@ -35,6 +35,10 @@
 		</association>
 	</resultMap>
 	
+	<sql id="sort">
+		order by c_id DESC
+	</sql>
+	
 	<sql id="insertBaseColumns" >
 		c_accountId, c_name, c_addr, c_type, c_scale, c_contact, c_contactPos, c_contactPhone, c_avatar, c_email, c_phone, c_industry, c_code, c_intro, c_video, c_link, c_logo, c_cert
 	</sql>

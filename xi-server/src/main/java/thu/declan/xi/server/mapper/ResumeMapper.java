@@ -13,4 +13,6 @@ public interface ResumeMapper extends BaseMapper<Resume> {
 	
 	List<Resume> selectByStudentId(int studentId);
 	
+	List<Resume> selectListByOfferTime(Resume resume);
+	
 }

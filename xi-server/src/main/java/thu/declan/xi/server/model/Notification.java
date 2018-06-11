@@ -24,6 +24,7 @@ public class Notification {
 	public final static String TPL_SALARY_CONFIRM = "您在【%s】工作的%s工资单已生成，请尽快确认。";
 	public final static String TPL_SALARY_GET = "您在【%s】工作的%s工资已到账，请登录查看账户余额。";
 	public final static String TPL_WITHDRAW = "您的提现申请已通过，请查收。";
+	public final static String TPL_WITHDRAW_ADOPT = "您的提现申请已二次审核通过，请留意后续通知。";
 	public final static String TPL_WITHDRAW_FAIL = "您的提现申请未通过，提现金额已退回账户余额。";
 	public final static String TPL_COMMENT = "实习结束啦，请及时对该公司进行评价。";
 	public final static String TPL_RESUME_NEW = "尊敬的【%s】，您发布的“【%s】”职位已有应聘者投递了简历，请尽快前往查看。";

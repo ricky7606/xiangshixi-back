@@ -12,6 +12,10 @@
         <result property="createTime" column="w_createTime" />
         <result property="payTime" column="w_payTime" />
     </resultMap>
+    
+	<sql id="sort">
+		order by w_id DESC
+	</sql>
 	
     <sql id="insertBaseColumns" >
         w_accountId, w_value, w_channel, w_state
@@ -57,6 +61,7 @@
         select <include refid="selectBaseColumns" />
         from xi_withdraw
         <include refid="whereList" />
+        <include refid="sort"/>
     </select>
     
     <select id="selectCount" parameterType="Withdraw" resultType="int">

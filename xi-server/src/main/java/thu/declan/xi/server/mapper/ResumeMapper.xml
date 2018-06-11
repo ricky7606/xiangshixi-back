@@ -21,6 +21,8 @@
 		<result property="commentComp" column="r_commentComp" />
 		<result property="createTime" column="r_createTime" />
 		<result property="endTime" column="r_endTime" />
+		<result property="remarkComp" column="r_remarkComp" />
+		<result property="remarkStu" column="r_remarkStu" />
 		<association property="student" javaType="Student">
 			<result property="id" column="s_id" />
 			<result property="accountId" column="s_accountId" />
@@ -88,8 +90,13 @@
 		</association>
 	</resultMap>
 	
+	<!-- 排序规则 -->
+	<sql id="sort">
+		order by r_id DESC
+	</sql>
+	
 	<sql id="insertBaseColumns" >
-		r_positionId, r_stuId, r_salary, r_stuSalary, r_unit, r_state, r_commentStu, r_commentComp, r_endTime
+		r_positionId, r_stuId, r_salary, r_stuSalary, r_unit, r_state, r_commentStu, r_commentComp, r_endTime, r_remarkComp, r_remarkStu
 	</sql>
     
 	<sql id="selectBaseColumns" >
@@ -111,7 +118,7 @@
     
 	<insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="Resume">
 		insert into xi_resume (<include refid="insertBaseColumns" />) 
-		values (#{positionId}, #{stuId}, #{salary}, #{stuSalary}, #{unit}, #{state}, #{commentStu}, #{commentComp}, #{endTime})
+		values (#{positionId}, #{stuId}, #{salary}, #{stuSalary}, #{unit}, #{state}, #{commentStu}, #{commentComp}, #{endTime}, #{remarkComp}, #{remarkStu})
 	</insert>
     
 	<update id="update" parameterType="Resume">
@@ -130,6 +137,8 @@
 			<if test="commentStu != null"> r_commentStu = #{commentStu}, </if>
 			<if test="commentComp != null"> r_commentComp = #{commentComp}, </if>
 			<if test="endTime != null"> r_endTime = #{endTime}, </if>
+			<if test="remarkComp != null"> r_remarkComp = #{remarkComp}, </if>
+			<if test="remarkStu != null"> r_remarkStu = #{remarkStu}, </if>
 		</trim>
 		where r_id = #{id}
 	</update>
@@ -144,12 +153,14 @@
 		select <include refid="selectBaseColumns" />
 		from xi_resume
 		where r_positionId = #{positionId}
+		<include refid="sort"/>
 	</select>
 	
 	<select id="selectByStudentId" parameterType="int" resultMap="resumeResult">
 		select <include refid="selectBaseColumns" />
 		from xi_resume
 		where r_stuId = #{studentId}
+		<include refid="sort"/>
 	</select>
 	
 	<sql id="whereList" >
@@ -168,11 +179,32 @@
 			</if>
 		</trim>
 	</sql>
-    
+	
+	<sql id="offerWhereList" >
+		<trim prefix="where" suffixOverrides="and">
+			<if test="positionId != null"> r_positionId = #{positionId} and </if>
+			<if test="companyId != null"> p_companyId = #{companyId} and </if>
+			<if test="stuId != null"> r_stuId = #{stuId} and </if>
+			<if test="state != null"> r_state = #{state} and </if>
+			<if test="queryStates != null"> 
+				r_state in 
+				<foreach item="item" index="index" collection="queryStates" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+				and 
+			</if>
+			<if test="offerTime != null">r_offerTime &lt; #{offerTime} and</if>
+			<if test="endTime != null">
+				(r_endTime is null or r_endTime &gt;= #{endTime}) and
+			</if>
+		</trim>
+	</sql>
+    <!-- 按条件查询简历  -->
 	<select id="selectList" parameterType="Resume" resultMap="resumeResult">
 		select <include refid="selectExtColumns" />
 		from <include refid="joinedTable" />
 		<include refid="whereList" />
+		<include refid="sort"/>
 	</select>
     
 	<select id="selectCount" parameterType="Resume" resultType="int">
@@ -180,5 +212,11 @@
 		from <include refid="joinedTable" />
 		<include refid="whereList" />
 	</select>
-   	
+	
+	<select id="selectListByOfferTime" parameterType="Resume" resultMap="resumeResult">
+		select <include refid="selectExtColumns" />
+		from <include refid="joinedTable" />
+		<include refid="offerWhereList" />
+		<include refid="sort" />
+	</select>
 </mapper>
